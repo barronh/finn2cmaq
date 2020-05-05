@@ -99,6 +99,7 @@ for ti, time in enumerate(times):
 
     del outf.variables['TFLAG']
     outf.SDATE = int(time.strftime('%Y%j'))
+    outf.TSTEP = 10000
     outf.updatemeta()
     print('Saving', flush=True)
     outf.save(
