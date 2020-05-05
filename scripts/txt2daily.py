@@ -89,6 +89,7 @@ def process(gf, args):
 
     if 'TFLAG' in outf.variables:
         del outf.variables['TFLAG']
+        delattr(outf, 'VAR-LIST')
 
     outf.updatemeta()
     return outf
