@@ -36,6 +36,7 @@ Annotated Directory Structure
 ```
 .
 |-- README.md
+|-- run.sh
 |-- gc2_to_cb6r3_ae7.txt
 |-- scripts
 |   |-- get.py
