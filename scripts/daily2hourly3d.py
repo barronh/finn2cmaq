@@ -92,7 +92,7 @@ for ti, time in enumerate(times):
         continue
     print('Processing ' + time.strftime('%F'), end='.', flush=True)
     for key in outkeys:
-        print(key, end='.')
+        print(key, end='.', flush=True)
         inv = spcf.variables[key]
         outv = outf.variables[key]
         outv[:] = inv[ti] * factor
