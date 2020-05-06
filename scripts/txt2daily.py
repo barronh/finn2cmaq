@@ -34,6 +34,7 @@ def renamer(k):
 
 
 def process(gf, args):
+    meanvars = ['GENVEG', 'TIME']
     path = args.FINNPATH
     gf.SDATE = args.YEAR * 1000 + 1
     gf.TSTEP = 240000
@@ -63,7 +64,9 @@ def process(gf, args):
     # Remove fires outside the domain or with detects
     # less than 50 m2 -- assumed false detect.
     indf = df.query('I != -999 and J != -999 and AREA >= 50')
-    sumdf = indf.groupby(['DAY', 'I', 'J'], as_index=False).sum()
+    gdf = indf.groupby(['DAY', 'I', 'J'], as_index=False)
+    sumdf = gdf.sum()
+    meandf = gdf.mean()
     days = np.arange(sumdf.DAY.min(), sumdf.DAY.max() + 1)
     outf = gf.copy(variables=False, dimensions=True, props=True, data=False)
     outf.createDimension('TSTEP', days.size).setunlimited(True)
@@ -78,14 +81,19 @@ def process(gf, args):
 
     for day in days:
         dayi = day - refday
-        daydf = sumdf.query('DAY == {}'.format(day))
-        iidx = daydf.I.values
-        jidx = daydf.J.values
+        daysumdf = sumdf.query('DAY == {}'.format(day))
+        daymeandf = meandf.query('DAY == {}'.format(day))
+        iidx = daysumdf.I.values
+        jidx = daysumdf.J.values
         kidx = iidx * 0
         tidx = kidx + dayi
         for varkey in varkeys:
             var = outf.variables[varkey]
-            var[tidx, kidx, jidx, iidx] = daydf[varkey].values
+            if varkey in meanvars:
+                val = daymeandf[varkey].values
+            else:
+                val = daysumdf[varkey].values
+            var[tidx, kidx, jidx, iidx] = val
 
     if 'TFLAG' in outf.variables:
         del outf.variables['TFLAG']

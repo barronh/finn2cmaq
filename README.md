@@ -18,7 +18,7 @@ or daily near-real-time tz files from www.acom.ucar.edu.
 Example:
 
 ```
-./run.sh
+./run_nrt.sh
 ```
 
 Prerequisites
@@ -36,10 +36,12 @@ Annotated Directory Structure
 ```
 .
 |-- README.md
-|-- run.sh
+|-- run_nrt.sh
+|-- run_retro.sh
 |-- gc2_to_cb6r3_ae7.txt
 |-- scripts
-|   |-- get.py
+|   |-- get_retro.py
+|   |-- get_nrt.py
 |   |-- txt2daily.py
 |   `-- daily2hourly3d.py
 |-- aux
