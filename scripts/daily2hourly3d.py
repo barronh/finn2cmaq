@@ -8,9 +8,10 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-l', '--layerpath', default='aux/layerfrac.csv')
-parser.add_argument('-t', '--tpropath', default='aux/tpro.txt')
-parser.add_argument('-e', '--exprpath', default='aux/gc12_to_cb6r3_ae7.txt')
+parser.add_argument('-l', '--layerpath', default='aux/layerfrac.csv', help='Layer fraction file')
+parser.add_argument('-t', '--tpropath', default='aux/tpro.txt', help='Hourly temporal profile path')
+parser.add_argument('-e', '--exprpath', default='aux/gc12_to_cb6r3_ae7.txt', help='Speciation conversion script path')
+parser.add_argument('-d' '--date', default=None, help='Process only this date YYYY-MM-DD')
 parser.add_argument('inpath')
 parser.add_argument('outtmp')
 args = parser.parse_args()
@@ -84,6 +85,10 @@ times = spcf.getTimes()
 print('Processing days', flush=True)
 gc.collect()
 for ti, time in enumerate(times):
+    if args.date is not None:
+        if time.strftime('%Y-%m-%d') != args.date:
+            print(time.strftime('Skipping %Y-%m-%d'), flush=True)
+            continue
     outpath = time.strftime(args.outtmp)
     outdir = os.path.dirname(outpath)
     os.makedirs(outdir, exist_ok=True)
