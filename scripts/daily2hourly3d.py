@@ -66,7 +66,11 @@ lfactor = getvertical(args.layerpath)
 evalexpr = getspeciate(args.exprpath)
 
 spcf = inf.copy().eval(evalexpr)
-factor = tfactor[:] * lfactor[None, :, None, None]
+# tfactor [=] e_{h} / e_{d}
+# lfactor [=] e_{x,z} / e_{x}
+# 1 / 3600 [=] e_{second} / e_{hour}
+# factor [=] e_{second,x,z} / e_{day,x}
+factor = tfactor[:] * lfactor[None, :, None, None] / 3600
 
 print('Preparing outputs', flush=True)
 outf = spcf.copy(dimensions=True, props=True, variables=False, data=False)
@@ -77,10 +81,12 @@ nz = lfactor.size
 outf.createDimension('TSTEP', out_nt)
 outf.createDimension('LAY', nz)
 
-outkeys = [key for key in spcf.variables if key != 'TFLAG']
+# not applying factor to AREA or TFLAG.
+outkeys = [key for key in spcf.variables if key not in ('TFLAG', 'AREA')]
 for key in outkeys:
     inv = spcf.variables[key]
     outv = outf.copyVariable(inv, key=key, withdata=False)
+    outv.units = inv.units.replace('/day', '/s')
 
 times = spcf.getTimes()
 print('Processing days', flush=True)
