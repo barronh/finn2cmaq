@@ -39,6 +39,8 @@ Annotated Directory Structure
 |-- run_nrt.sh
 |-- run_retro.sh
 |-- gc2_to_cb6r3_ae7.txt
+|-- examples
+|   `-- FINN2CMAQ.ipynb
 |-- scripts
 |   |-- get_retro.py
 |   |-- get_nrt.py
@@ -56,12 +58,11 @@ Annotated Directory Structure
 |   `-- %Y
 |       `-- %m
 |           `-- FINNv1.5_%Y.CB6r3.3D.%Y-%m-%d.nc
-|-- bai.acom.ucar.edu
-|   `-- Data
-|       `-- fire
-|           `-- data
-|               `-- FINNv1.5_2016.GEOSCHEM.tar.gz
 `-- www.acom.ucar.edu
+    |-- Data
+    |   `-- fire
+    |       `-- data
+    |           `-- FINNv1.5_2016.GEOSCHEM.tar.gz
     `-- acresp
         `-- MODELING
             `-- finn_emis_txt
