@@ -1,5 +1,8 @@
 FINN2CMAQ Processor
--------------------
+===================
+
+Overview
+--------
 
 This processor make Fire Emissions ready for CMAQ.
 
@@ -21,6 +24,15 @@ Example:
 ./run_nrt.sh
 ```
 
+Notable Updates
+---------------
+
+* 2021-06-24
+  * An example Jupyter Notebook has been added for testing purposes.
+  * The PM speciation has been updated to use g/s definitions.
+  * The `scripts/daily2hourly3d.py` has been updated to output a CMAQ-ready unit and to have the option to process individual days.
+
+
 Prerequisites
 -------------
 
@@ -28,6 +40,7 @@ Prerequisites
 - Python3
   - pandas
   - numpy
+  - pyproj
   - PseudoNetCDF
 
 Annotated Directory Structure
