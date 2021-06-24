@@ -8,6 +8,7 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-v', '--verbose', action='count', default=0)
 parser.add_argument('-l', '--layerpath', default='aux/layerfrac.csv', help='Layer fraction file')
 parser.add_argument('-t', '--tpropath', default='aux/tpro.txt', help='Hourly temporal profile path')
 parser.add_argument('-e', '--exprpath', default='aux/gc12_to_cb6r3_ae7.txt', help='Speciation conversion script path')
@@ -87,7 +88,8 @@ gc.collect()
 for ti, time in enumerate(times):
     if args.date is not None:
         if time.strftime('%Y-%m-%d') != args.date:
-            print(time.strftime('Skipping %Y-%m-%d'), flush=True)
+            if args.verbose > 0:
+                print(time.strftime('Skipping %Y-%m-%d'), flush=True)
             continue
     outpath = time.strftime(args.outtmp)
     outdir = os.path.dirname(outpath)
