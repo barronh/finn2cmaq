@@ -8,8 +8,9 @@ This processor make Fire Emissions ready for CMAQ.
 
 FINN makes global predictions of fire emissions that are quickly available
 as a part of the WACMM system. This processor takes the WACMM FINN input
-and converts it to a 2D daily ioapi file. It then converts teh 2D daily file
-into a 3D hourly file for use in CMAQ.
+and converts it to a 2D daily ioapi file. It then converts the 2D daily file
+into a 3D hourly file for use in CMAQ. It should be noted that this 3D product
+is a very simplistic version of fires.
 
 The processor can work with retrospective tar.gz files from bai.acom.ucar.edu
 or daily near-real-time tz files from www.acom.ucar.edu.
