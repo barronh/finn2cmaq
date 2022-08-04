@@ -54,6 +54,27 @@ def renamer(k):
         return k
 
 
+def openfinn(path):
+    if path.endswith('.tar.gz'):
+        with tarfile.open(path, "r:*") as tar:
+            csv_path = [
+                path for path in tar.getnames() if not path.endswith('.pdf')
+            ][0]
+            tf = tar.extractfile(csv_path)
+            df = pd.read_csv(tf, index_col=False)
+    elif path.endswith('.gz'):
+        gfile = gzip.GzipFile(path, mode='r')
+        dattxt = gfile.read().decode('latin1')
+        dattxt = dattxt.replace('D+', 'e+').replace('D-', 'e-')
+        dattxt = dattxt.replace('d+', 'e+').replace('d-', 'e-')
+        df = pd.read_csv(io.StringIO(dattxt), index_col=False)
+    else:
+        df = pd.read_csv(path, skipinitialspace=True)
+
+    df.columns = [renamer(k) for k in df.columns]
+    return df
+
+
 def txt2daily(gf, YEAR, FINNPATH, OUTPATH, verbose=0):
     """
     Takes FINN inputs and converts to IOAPI-like daily 2d file.
@@ -78,27 +99,10 @@ def txt2daily(gf, YEAR, FINNPATH, OUTPATH, verbose=0):
         PseudoNetCDF if OUTPATH is None; NetCDF otherwise.
     """
     meanvars = ['GENVEG', 'TIME']
-    path = FINNPATH
     gf.SDATE = YEAR * 1000 + 1
     gf.TSTEP = 240000
     del gf.variables['TFLAG']
-    if path.endswith('.tar.gz'):
-        with tarfile.open(path, "r:*") as tar:
-            csv_path = [
-                path for path in tar.getnames() if not path.endswith('.pdf')
-            ][0]
-            tf = tar.extractfile(csv_path)
-            df = pd.read_csv(tf, index_col=False)
-    elif path.endswith('.gz'):
-        gfile = gzip.GzipFile(path, mode='r')
-        dattxt = gfile.read().decode('latin1')
-        dattxt = dattxt.replace('D+', 'e+').replace('D-', 'e-')
-        dattxt = dattxt.replace('d+', 'e+').replace('d-', 'e-')
-        df = pd.read_csv(io.StringIO(dattxt), index_col=False)
-    else:
-        df = pd.read_csv(path, skipinitialspace=True)
-
-    df.columns = [renamer(k) for k in df.columns]
+    df = openfinn(FINNPATH)
     im, jm = gf.ll2ij(df.longitude.values, df.latitude.values, clean='mask')
     i = im.filled(-999)
     j = jm.filled(-999)
