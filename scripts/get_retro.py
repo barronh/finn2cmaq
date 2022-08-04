@@ -5,7 +5,7 @@ from urllib.request import urlretrieve
 import os
 
 URLTMPL= (
-    'http://bai.acom.ucar.edu/Data/fire/data/FINNv1.5_%Y.GEOSCHEM.tar.gz'
+    'http://www.acom.ucar.edu/Data/fire/data/finn1/FINNv1.5_%Y.GEOSCHEM.tar.gz'
 )
 
 parser = argparse.ArgumentParser()
