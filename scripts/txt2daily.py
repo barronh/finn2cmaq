@@ -11,6 +11,15 @@ import pandas as pd
 import numpy as np
 import PseudoNetCDF as pnc
 
+__version__ = '0.1.0'
+__doc__ = """
+Use daily2hourly3d.daily2hourly3d to convert daily FINN files to hourly files
+that are CMAQ-ready.
+
+Changes:
+* 2020-08-04: BHH added version, documentation, and cleaned-up metadata.
+"""
+
 
 doublere = re.compile('([dD][+-])')
 units = defaultdict(lambda: 'moles/day')
@@ -25,6 +34,18 @@ units['HOUR'] = '<HHMM>'
 
 
 def renamer(k):
+    """
+    Arguments
+    ---------
+    k : str
+        Any string
+
+    Returns
+    -------
+    k : str
+        LONGI and LATI are converted to longitude and latitude; all else are
+        returned unchanged
+    """
     if k == 'LONGI':
         return 'longitude'
     elif k == 'LATI':
@@ -33,10 +54,32 @@ def renamer(k):
         return k
 
 
-def process(gf, args):
+def txt2daily(gf, YEAR, FINNPATH, OUTPATH, verbose=0):
+    """
+    Takes FINN inputs and converts to IOAPI-like daily 2d file.
+    * Omits fires less than 50m**2 assuming a misdetect
+
+    Arguments
+    ---------
+    gf : NetCDF-like file
+        Template for gridded file
+    YEAR : int
+        Year for output file
+    FINNPATH : str
+        Path to finn input. Can be .tar.gz or .gz or .csv
+    OUTPATH : str
+        Output path for the NetCDF IOAPI-like file. Or None for no save.
+    verbose : int
+        Level of verbosity
+
+    Returns
+    -------
+    outf : NetCDF-like file
+        PseudoNetCDF if OUTPATH is None; NetCDF otherwise.
+    """
     meanvars = ['GENVEG', 'TIME']
-    path = args.FINNPATH
-    gf.SDATE = args.YEAR * 1000 + 1
+    path = FINNPATH
+    gf.SDATE = YEAR * 1000 + 1
     gf.TSTEP = 240000
     del gf.variables['TFLAG']
     if path.endswith('.tar.gz'):
@@ -63,6 +106,7 @@ def process(gf, args):
     df['J'] = j
     # Remove fires outside the domain or with detects
     # less than 50 m2 -- assumed false detect.
+    # BHH: I did not come up with this, but I do not recall who suggested it.
     indf = df.query('I != -999 and J != -999 and AREA >= 50')
     gdf = indf.groupby(['DAY', 'I', 'J'], as_index=False)
     sumdf = gdf.sum()
@@ -70,7 +114,7 @@ def process(gf, args):
     days = np.arange(sumdf.DAY.min(), sumdf.DAY.max() + 1)
     outf = gf.copy(variables=False, dimensions=True, props=True, data=False)
     outf.createDimension('TSTEP', days.size).setunlimited(True)
-    outf.SDATE = args.YEAR * 1000 + days[0]
+    outf.SDATE = YEAR * 1000 + days[0]
     refday = days[0]
     varkeys = sumdf.columns
     for varkey in varkeys:
@@ -97,10 +141,39 @@ def process(gf, args):
 
     if 'TFLAG' in outf.variables:
         del outf.variables['TFLAG']
-        setattr(outf, 'VAR-LIST', ''.join([varkey.ljust(16) for varkey in varkeys]))
+        setattr(
+            outf, 'VAR-LIST', ''.join([varkey.ljust(16) for varkey in varkeys])
+        )
 
+    if 'nv' in outf.dimensions:
+        del outf.dimensions['nv']
+    if 'tnv' in outf.dimensions:
+        del outf.dimensions['tnv']
+    if hasattr(outf, 'Conventions'):
+        delattr(outf, 'Conventions')
     outf.updatemeta()
-    return outf
+    outf.variables.move_to_end('TFLAG', last=False)
+    history = (
+        "Converted to daily 2D IOAPI-like file from "
+        + f"{FINNPATH} using txt2daily (v{__version__})"
+    ).ljust(60*80)[:60*80]
+    filedesc = (
+        "FINN emissions as surface-level daily files with species and units"
+        + " from the file"
+    ).ljust(60*80)[:60*80]
+    outf.UPNAM = "txt2daily".ljust(16)
+    outf.FILEDESC = filedesc
+    outf.HISTORY = history
+    outdir = os.path.dirname(OUTPATH)
+    os.makedirs(outdir, exist_ok=True)
+    if OUTPATH is None:
+        return outf
+    else:
+        diskf = outf.save(
+            OUTPATH, format='NETCDF4_CLASSIC',
+            complevel=1, verbose=verbose
+        ).close
+        return diskf
 
 
 if __name__ == '__main__':
@@ -116,10 +189,6 @@ if __name__ == '__main__':
         print('Keeping cached', args.OUTPATH)
     else:
         gf = pnc.pncopen(args.GRIDDESC, format='griddesc', GDNAM=args.GDNAM)
-        outf = process(gf, args)
-        outdir = os.path.dirname(args.OUTPATH)
-        os.makedirs(outdir, exist_ok=True)
-        outf.save(
-            args.OUTPATH, format='NETCDF4_CLASSIC',
-            complevel=1, verbose=args.verbose
+        outf = txt2daily(
+            gf, args.YEAR, args.FINNPATH, args.OUTPATH, args.verbose
         )

@@ -4,7 +4,7 @@ from datetime import datetime
 from urllib.request import urlretrieve
 import os
 
-URLTMPL= (
+URLTMPL = (
     'https://www.acom.ucar.edu/acresp/MODELING/finn_emis_txt/' +
     'GLOB_GEOSchem_%Y%j.txt.gz'
 )
@@ -25,4 +25,3 @@ for datestr in args.dates:
     else:
         print('Downloading', target)
         urlretrieve(url, target)
-

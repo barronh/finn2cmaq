@@ -21,13 +21,15 @@ or daily near-real-time tz files from www.acom.ucar.edu.
 
 Example:
 
-```
-./run_nrt.sh
-```
+See examples/FINN2CMAQ.ipynb
 
 Notable Updates
 ---------------
 
+* 2022-08-04
+  * Versions have been added to txt2daily.py and daily2hourly3d.py scripts. (0.1.0)
+  * Histories including versions have been added to outputs.
+  * Additional documentation has been added to functions.
 * 2021-06-24
   * An example Jupyter Notebook has been added for testing purposes.
   * The PM speciation has been updated to use g/s definitions.

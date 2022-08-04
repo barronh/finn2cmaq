@@ -4,7 +4,7 @@ from datetime import datetime
 from urllib.request import urlretrieve
 import os
 
-URLTMPL= (
+URLTMPL = (
     'http://www.acom.ucar.edu/Data/fire/data/finn1/FINNv1.5_%Y.GEOSCHEM.tar.gz'
 )
 
@@ -24,4 +24,3 @@ for datestr in [args.date]:
     else:
         print('Downloading', target)
         urlretrieve(url, target)
-

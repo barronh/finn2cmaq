@@ -1,6 +1,7 @@
 submit.sh
 hourly/*
 daily/*
+runs/*
 bai.acom.ucar.edu/*
 www.acom.ucar.edu/*
 slog.*
