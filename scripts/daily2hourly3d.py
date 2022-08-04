@@ -86,7 +86,7 @@ outkeys = [key for key in spcf.variables if key not in ('TFLAG', 'AREA')]
 for key in outkeys:
     inv = spcf.variables[key]
     outv = outf.copyVariable(inv, key=key, withdata=False)
-    outv.units = inv.units.replace('/day', '/s')
+    outv.units = inv.units.replace('/day', '/s').ljust(16)
 
 times = spcf.getTimes()
 print('Processing days', flush=True)
