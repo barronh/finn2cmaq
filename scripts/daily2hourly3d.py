@@ -23,7 +23,7 @@ def getvertical(path):
     ---------
     path : str
         Must have "frac", "sigma_bottom", and "sigma_top" columns. "frac"
-        alloates emissions fractionally to vertical levels. "sigma_bottom" and
+        allocates emissions fractionally to vertical levels. "sigma_bottom" and
         "sigma_top" define the vertical coordinate of the bottom and top of
         each layer.
 
@@ -44,7 +44,8 @@ def gettemporal(path, gf):
     Arguments
     ---------
     path : str
-        Must have hour1..hour24 fields for local time.
+        Must have hour1..hour24 fields for local time. Always uses the first
+        available row.
 
     Returns
     -------
@@ -113,7 +114,8 @@ def daily2hourly3d(
     inpath : str
         Path to daily IOAPI-like file
     outtmp : str
-        strftime formatted template for hourly output (e.g., FINN_v1.5_%Y-%m-%d.nc)
+        strftime formatted template for hourly output (e.g.,
+        FINN_v1.5_%Y-%m-%d.nc)
     tpropath : str
         Temporal factor file (must be readable by gettemporal)
     layerpath : str
@@ -124,7 +126,7 @@ def daily2hourly3d(
         If a list, it should be a subset of dates to process
     verbose : int
         Level of verbosity
-    
+
     Returns
     -------
     outf : NetCDF-like file
@@ -225,15 +227,28 @@ if __name__ == "__main__":
     parser.add_argument('-v', '--verbose', action='count', default=0)
     parser.add_argument(
         '-l', '--layerpath', default='aux/layerfrac.csv',
-        help='Layer fraction file'
+        metavar='LAYER_FRACTION_PATH', help=(
+            'Layer fraction file must have "frac", "sigma_bottom", and'
+            + ' "sigma_top" columns. "frac" allocates emissions fractionally'
+            + ' to vertical levels. "sigma_bottom" and "sigma_top" define the'
+            + ' vertical coordinate of the bottom and top of each layer.'
+        )
     )
     parser.add_argument(
         '-t', '--tpropath', default='aux/tpro.txt',
-        help='Hourly temporal profile path'
+        metavar='HOURLY_PROFILE_PATH', help=(
+            'Hourly temporal profile file must have hour1..hour24 fields for'
+            + ' local time. Always uses the first row.'
+        )
     )
     parser.add_argument(
         '-e', '--exprpath', default='aux/gc12_to_cb6r3_ae7.txt',
-        help='Speciation conversion script path'
+        metavar='SPECIATION_PATH', help=(
+            'Speciation conversion script path. Must contain definition of'
+            + ' output species (i.e., CMAQ-ready definitions) based on the'
+            + ' FINN input file columns. (see aux/gc12_to_cb6r3_ae7.txt for'
+            + ' examples).'
+        )
     )
     parser.add_argument(
         '-d', '--date', default=[], dest='dates', action='append',

@@ -23,9 +23,26 @@ Example:
 
 See examples/FINN2CMAQ.ipynb
 
+Configuration Notes
+-------------------
+
+daily2hourly3d.py has three notable configuration options:
+
+* `--tpropath` specifies how all fires will be allocated in time.
+* `--layerpath` specifies how all fires will be allocated to model layers.
+* `--exprpath` specifies how FINN file columns will be translated to CMAQ-ready species.
+
+For more details, see run `./scripts/daily2hourly3d.py --help`
+
+
 Notable Updates
 ---------------
 
+* 2022-09-16
+  * Added support for PMC from v2 FINN files.
+  * Removed run_retro.sh because the download part should be manual because the path structures change too much.
+  * Changed default hourly temporal allocation from 210 to 1008. Select either by moving to the first position in aux/tpro.txt
+  * Modified aux/layerfrac.csv to extend to 44 layers. The EPA 35 and 44 layer structures are very similar in the first 19 levels, so you can use the aux/layerfrac.csv for either by removing the number of layers you are not using.
 * 2022-08-04
   * Versions have been added to txt2daily.py and daily2hourly3d.py scripts. (0.1.0)
   * Histories including versions have been added to outputs.
@@ -35,6 +52,11 @@ Notable Updates
   * The PM speciation has been updated to use g/s definitions.
   * The `scripts/daily2hourly3d.py` has been updated to output a CMAQ-ready unit and to have the option to process individual days.
 
+
+To Do
+-----
+
+* Add speciation translations for MOZART or SAPRC99. This would provide access to different explicit species (e.g., HONO).
 
 Prerequisites
 -------------
@@ -46,8 +68,10 @@ Prerequisites
   - pyproj
   - PseudoNetCDF
 
+
 Annotated Directory Structure
 -----------------------------
+
 
 ```
 .
@@ -55,8 +79,6 @@ Annotated Directory Structure
 |   # This file
 |-- run_nrt.sh
 |   # A wrapper to run 1 day for the near-real-time FINN
-|-- run_retro.sh
-|   # A wrapper to run 1 year for the retrospective FINN
 |-- examples
 |   `-- FINN2CMAQ.ipynb
 |-- scripts
@@ -68,7 +90,9 @@ Annotated Directory Structure
 |   |-- README.md
 |   |   # More details about aux files
 |   |-- gc2_to_cb6r3_ae7.txt
-|   |   # speciation definition.
+|   |   # speciation definition for GEOS-Chem in v1.5
+|   |-- gc2_to_cb6r3_ae7_v2.txt
+|   |   # speciation definition for GEOS-Chem in v2
 |   |-- GRIDDESC
 |   |   # example grid definitions
 |   |-- layerfrac.csv

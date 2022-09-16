@@ -23,14 +23,23 @@ Changes:
 
 doublere = re.compile('([dD][+-])')
 units = defaultdict(lambda: 'moles/day')
+units['DAY'] = 'day_of_year'
+units['TIME'] = '<HHMM>'
+units['HOUR'] = '<HHMM>'
+units['longitude'] = 'degrees_east'
+units['latitude'] = 'degrees_north'
+units['POLYID'] = 'none'
+units['FIREID'] = 'none'
+units['AREA'] = 'm**2'
+units['BMASS'] = 'kg/m**2'
 units['OC'] = 'kg/day'
 units['BC'] = 'kg/day'
 units['PM25'] = 'kg/day'
-units['AREA'] = 'm**2'
-units['longitude'] = 'degrees_east'
-units['latitude'] = 'degrees_north'
-units['DAY'] = 'day_of_year'
-units['HOUR'] = '<HHMM>'
+units['PM10'] = 'kg/day'
+units['TPC'] = 'kg/day'
+units['TPM'] = 'kg/day'
+units['NMOC'] = 'kg/day'
+units['NMHC'] = 'kg/day'
 
 
 def renamer(k):
@@ -51,7 +60,7 @@ def renamer(k):
     elif k == 'LATI':
         return 'latitude'
     else:
-        return k
+        return k.strip()
 
 
 def openfinn(path):
@@ -176,7 +185,7 @@ def txt2daily(gf, YEAR, FINNPATH, OUTPATH, verbose=0):
         diskf = outf.save(
             OUTPATH, format='NETCDF4_CLASSIC',
             complevel=1, verbose=verbose
-        ).close
+        ).close()
         return diskf
 
 
